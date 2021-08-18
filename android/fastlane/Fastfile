@@ -1,0 +1,25 @@
+default_platform(:android)
+
+platform :android do
+  desc "Runs all the tests"
+  lane :increment_build do
+   version = get_version_number
+    latestBuildNumber = latest_testflight_build_number(version: version)
+    increment_build_number(
+      build_number: latestBuildNumber + 1,
+      xcodeproj: "Cleanfox.xcodeproj"
+    )
+  end
+desc "Submit a new Beta Build to Firebase App Distribution"
+lane :beta do
+  build
+
+  firebase_app_distribution(
+      app: "1:997395278267:android:65730818950fe65ba0bc9e",
+      groups: "group-two",
+	  firebase_cli_token: "1//06XPStor7Nib5CgYIARAAGAYSNwF-L9IrRI-Y5Fp32Y-CLYu46wcfW8YEi6RMAbW0M92eZ7ExVdYocKdmW-GRmqxRwnXR99piDwE",
+      release_notes: "Lots of amazing new features to test out!"
+  )
+end
+
+end
