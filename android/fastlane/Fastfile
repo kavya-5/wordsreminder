@@ -1,24 +1,38 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
 default_platform(:android)
 
 platform :android do
   desc "Runs all the tests"
-  lane :increment_build do
-   version = get_version_number
-    latestBuildNumber = latest_testflight_build_number(version: version)
-    increment_build_number(
-      build_number: latestBuildNumber + 1,
-      xcodeproj: "Cleanfox.xcodeproj"
-    )
+  lane :test do
+    gradle(task: "test")
   end
-desc "Submit a new Beta Build to Firebase App Distribution"
-lane :beta do
-  firebase_app_distribution(
-      service_credentials_file: "firebase.json",
-      app: "1:997395278267:android:65730818950fe65ba0bc9e",
-      groups: "Initial",
-      firebase_cli_token: "1//06XPStor7Nib5CgYIARAAGAYSNwF-L9IrRI-Y5Fp32Y-CLYu46wcfW8YEi6RMAbW0M92eZ7ExVdYocKdmW-GRmqxRwnXR99piDwE",
-      release_notes: "Lots of amazing new features to test out!"
-  )
-end
 
+  desc "Submit a new Beta Build to Crashlytics Beta"
+  lane :beta do
+    gradle(task: "clean assembleRelease")
+    crashlytics
+  
+    # sh "your_script.sh"
+    # You can also use other beta testing services here
+  end
+
+  desc "Deploy a new version to the Google Play"
+  lane :deploy do
+    gradle(task: "clean assembleRelease")
+    upload_to_play_store
+  end
 end

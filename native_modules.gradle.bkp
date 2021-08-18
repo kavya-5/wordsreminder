@@ -244,7 +244,10 @@ class ReactNativeModules {
     def dependencies = json["dependencies"]
     def project = json["project"]["android"]
 
-  
+    if (project == null) {
+      throw new Exception("React Native CLI failed to determine Android project configuration. This is likely due to misconfiguration. Config output:\n${json.toMapString()}")
+    }
+
     dependencies.each { name, value ->
       def platformsConfig = value["platforms"];
       def androidConfig = platformsConfig["android"]
